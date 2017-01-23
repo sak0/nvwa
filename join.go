@@ -29,8 +29,8 @@ func joinBridge(c *cli.Context) {
         //fmt.Printf("%v\n", ovsdber)
         ovsdber.InitCache()
         ovsdber.AddBridge(bridge)
-	//err := interfaceUp(bridge)
-	//if err != nil {
-	//	fmt.Printf("Failed: enable iface:%s\n", bridge)
-	//}
+	err := interfaceUp(bridge)
+	if err != nil {
+		fmt.Printf("Failed: enable iface:%s\n", bridge)
+	}
 }

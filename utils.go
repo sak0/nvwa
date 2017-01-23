@@ -5,8 +5,9 @@ import (
 	"net"
         "time"
         "os/exec"
+        "errors"
 	"github.com/vishvananda/netlink"
-        log "github.com/Sirupsen/logrus"
+        //log "github.com/Sirupsen/logrus"
 )
 
 var (
@@ -62,10 +63,13 @@ func Execute(binary string, args []string) (string, error) {
 }
 
 func interfaceUp(name string) error {
-	iface, err := netlink.LinkByName(name)
-	if err != nil {
-		log.Debugf("Error retrieving a link named [ %s ]", iface.Attrs().Name)
-		return err
+        for i := 0; i < 5; i++ {
+		iface, err := netlink.LinkByName(name)
+                if err == nil {
+			return netlink.LinkSetUp(iface)
+		}
+                fmt.Printf("can't find link [%s] , retry... \n", name)
+                time.Sleep(time.Millisecond * 100)
 	}
-	return netlink.LinkSetUp(iface)
+        return errors.New("Error retrieving a link")
 }
