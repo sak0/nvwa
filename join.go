@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
         "github.com/urfave/cli"
-        "github.com/nvwa/ovs"
+        "github.com/sak0/nvwa/ovs"
 )
 
 var joinCommand = cli.Command{
