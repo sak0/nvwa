@@ -7,7 +7,7 @@ import (
         "os/exec"
         "errors"
 	"github.com/vishvananda/netlink"
-        //log "github.com/Sirupsen/logrus"
+        log "github.com/Sirupsen/logrus"
 )
 
 var (
@@ -33,6 +33,30 @@ func getIfaceAddr(name string) (*net.IPNet, error) {
 	return addrs[0].IPNet, nil
 }
 
+// Set the IP addr of a netlink interface
+func setInterfaceIP(name string, rawIP string) error {
+	retries := 2
+	var iface netlink.Link
+	var err error
+	for i := 0; i < retries; i++ {
+		iface, err = netlink.LinkByName(name)
+		if err == nil {
+			break
+		}
+		log.Debugf("error retrieving new OVS bridge netlink link [ %s ]... retrying", name)
+		time.Sleep(2 * time.Second)
+	}
+	if err != nil {
+		log.Fatalf("Abandoning retrieving the new OVS bridge link from netlink, Run [ ip link ] to troubleshoot the error: %s", err)
+		return err
+	}
+	ipNet, err := netlink.ParseIPNet(rawIP)
+	if err != nil {
+		return err
+	}
+	addr := &netlink.Addr{IPNet: ipNet, Label: ""}
+	return netlink.AddrAdd(iface, addr)
+}
 
 func Execute(binary string, args []string) (string, error) {
 	var output []byte

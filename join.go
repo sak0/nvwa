@@ -33,4 +33,9 @@ func joinBridge(c *cli.Context) {
 	if err != nil {
 		fmt.Printf("Failed: enable iface:%s\n", bridge)
 	}
+
+        err = setInterfaceIP(bridge, "172.16.74.210")
+        if err != nil {
+		fmt.Printf("Failed: set iface [%s] addr %s\n", bridge, "172.16.74.210")
+	}
 }
