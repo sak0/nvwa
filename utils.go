@@ -57,7 +57,6 @@ func setInterfaceIP(name string, rawIP string) error {
 	}
 	
 	addr := &netlink.Addr{IPNet: ipNet, Label: ""}
-	fmt.Printf("ipNet:%v\naddr:%v\niface:%v\n", ipNet, addr, iface)
 	return netlink.AddrAdd(iface, addr)
 }
 

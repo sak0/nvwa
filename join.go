@@ -24,7 +24,7 @@ func joinBridge(c *cli.Context) {
 	device := c.Args().First()
     bridge := c.String("bridge")
     addr, _ := getIfaceAddr(device)
-    fmt.Println(bridge, device, addr.IP)
+    fmt.Println(bridge, device, addr.IP, addr.String())
     ovsdber, _ := ovs.GetOvsdber()
     //fmt.Printf("%v\n", ovsdber)
     ovsdber.InitCache()
@@ -33,13 +33,13 @@ func joinBridge(c *cli.Context) {
 	if err != nil {
 		fmt.Printf("Failed: enable iface:%s\n", bridge)
 	}
+	err = delInterfaceIP(device, addr.String())
+    if err != nil {
+		fmt.Printf("Failed: del iface [%s] addr %s\n", device, "172.16.74.210/24")
+	}
 
-    err = setInterfaceIP(bridge, "172.16.74.210/24")
+    err = setInterfaceIP(bridge, addr.String())
     if err != nil {
 		fmt.Printf("Failed: set iface [%s] addr %s\n", bridge, "172.16.74.210/24")
-	}
-    err = delInterfaceIP(bridge, "172.16.74.210/24")
-    if err != nil {
-		fmt.Printf("Failed: del iface [%s] addr %s\n", bridge, "172.16.74.210/24")
 	}
 }
