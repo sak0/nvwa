@@ -14,7 +14,7 @@ var (
 func main() {
 	app := cli.NewApp()
 	app.Name = "nvwa"
-        app.Version = version
+    app.Version = version
 	app.Usage = usage
 
         app.Flags = []cli.Flag{
@@ -28,7 +28,7 @@ func main() {
 		joinCommand,
 	}
 
-        app.Action = Run
+    app.Action = Run
 	app.Run(os.Args)
 }
 

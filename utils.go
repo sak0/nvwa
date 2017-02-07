@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"net"
-        "time"
-        "os/exec"
-        "errors"
+    "time"
+    "os/exec"
+    "errors"
 	"github.com/vishvananda/netlink"
-        log "github.com/Sirupsen/logrus"
+    log "github.com/Sirupsen/logrus"
 )
 
 var (
@@ -52,10 +52,37 @@ func setInterfaceIP(name string, rawIP string) error {
 	}
 	ipNet, err := netlink.ParseIPNet(rawIP)
 	if err != nil {
+		fmt.Printf("setInterfaceIP failed ParseIPNet.")
+		return err
+	}
+	
+	addr := &netlink.Addr{IPNet: ipNet, Label: ""}
+	fmt.Printf("ipNet:%v\naddr:%v\niface:%v\n", ipNet, addr, iface)
+	return netlink.AddrAdd(iface, addr)
+}
+
+func delInterfaceIP(name string, rawIP string) error {
+	retries := 2
+	var iface netlink.Link
+	var err error
+	for i := 0; i < retries; i++ {
+		iface, err = netlink.LinkByName(name)
+		if err == nil {
+			break
+		}
+		log.Debugf("error retrieving new OVS bridge netlink link [ %s ]... retrying", name)
+		time.Sleep(2 * time.Second)
+	}
+	if err != nil {
+		log.Fatalf("Abandoning retrieving the new OVS bridge link from netlink, Run [ ip link ] to troubleshoot the error: %s", err)
+		return err
+	}
+	ipNet, err := netlink.ParseIPNet(rawIP)
+	if err != nil {
 		return err
 	}
 	addr := &netlink.Addr{IPNet: ipNet, Label: ""}
-	return netlink.AddrAdd(iface, addr)
+	return netlink.AddrDel(iface, addr)
 }
 
 func Execute(binary string, args []string) (string, error) {
@@ -87,13 +114,13 @@ func Execute(binary string, args []string) (string, error) {
 }
 
 func interfaceUp(name string) error {
-        for i := 0; i < 5; i++ {
+    for i := 0; i < 5; i++ {
 		iface, err := netlink.LinkByName(name)
-                if err == nil {
+		if err == nil {
 			return netlink.LinkSetUp(iface)
 		}
-                fmt.Printf("can't find link [%s] , retry... \n", name)
-                time.Sleep(time.Millisecond * 100)
+        fmt.Printf("can't find link [%s] , retry... \n", name)
+        time.Sleep(time.Millisecond * 100)
 	}
-        return errors.New("Error retrieving a link")
+    return errors.New("Error retrieving a link")
 }
