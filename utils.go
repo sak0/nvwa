@@ -17,6 +17,7 @@ var (
 func getIfaceAddr(name string) (*net.IPNet, error) {
 	iface, err := netlink.LinkByName(name)
 	if err != nil {
+                fmt.Printf("error")
 		return nil, err
 	}
 	addrs, err := netlink.AddrList(iface, netlink.FAMILY_V4)
