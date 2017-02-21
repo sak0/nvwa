@@ -4,6 +4,7 @@ import (
 	"fmt"
         "github.com/urfave/cli"
         "github.com/sak0/nvwa/ovs"
+        "github.com/vishvananda/netlink"
 )
 
 var joinCommand = cli.Command{
@@ -33,7 +34,12 @@ func joinBridge(c *cli.Context) {
 	if err != nil {
 		fmt.Printf("Failed: enable iface:%s\n", bridge)
 	}
-	err = delInterfaceIP(device, addr.String())
+	
+	//nlh := ns.NlHandle()
+	//routes, err := nlh.RouteGet(addr.IP)
+	router, err := netlink.RouteGet(addr.IP)
+	fmt.Printf("router: %v\n", router)
+	/*err = delInterfaceIP(device, addr.String())
     if err != nil {
 		fmt.Printf("Failed: del iface [%s] addr %s\n", device, "172.16.74.210/24")
 	}
@@ -41,5 +47,5 @@ func joinBridge(c *cli.Context) {
     err = setInterfaceIP(bridge, addr.String())
     if err != nil {
 		fmt.Printf("Failed: set iface [%s] addr %s\n", bridge, "172.16.74.210/24")
-	}
+	}*/
 }
