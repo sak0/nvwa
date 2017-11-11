@@ -25,6 +25,7 @@ func getIfaceAddr(name string) (*net.IPNet, error) {
 		return nil, err
 	}
 	fmt.Printf("addrs: %v\n", addrs)
+	fmt.Printf("addrs: %v\n", addrs)
 	if len(addrs) == 0 {
 		return nil, fmt.Errorf("Interface %s has no IP addresses", name)
 	}
